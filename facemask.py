@@ -20,7 +20,7 @@ humanDatasetPath = datasetPath + "/human dataset"
 nonHumanDatasetPath = datasetPath + "/non-human dataset"
 preprocessedDataPath = datasetPath + "/data.npy"
 resultsPath = "./Results/"
-modelName = "kFoldModel1.pkl"
+modelName = "kFoldModel.pkl"
 
 
 class Data:
@@ -207,6 +207,14 @@ class TrainTest:
         plt.imshow(image)
         plt.savefig(resultsPath + imageName)
         plt.close(fig)
+    
+    def predictProbabilities(self, imageName):
+        img = cv2.imread(testImagesPath + imageName, cv2.IMREAD_COLOR)
+        img = cv2.resize(img, (100, 100))
+        floatImg = img.astype(np.float32)
+        y_pred = self.model.predict_proba(floatImg.reshape(-1, 3, 100, 100))
+        return y_pred[0]
+
 
 
 buildData = sys.argv[1] == "True"
@@ -225,3 +233,5 @@ trainTest.printClassificationReportAndPlotConfusionMatrix()
 
 for fileName in os.listdir(testImagesPath):
     trainTest.plotTestPredictions(fileName)
+
+probabilities = trainTest.predictProbabilities("2.jpg")
