@@ -229,9 +229,10 @@ if trainModel:
 
 trainTest.loadModel()
 
-trainTest.printClassificationReportAndPlotConfusionMatrix()
+#trainTest.printClassificationReportAndPlotConfusionMatrix()
 
-for fileName in os.listdir(testImagesPath):
-    trainTest.plotTestPredictions(fileName)
+#for fileName in os.listdir(testImagesPath):
+#    trainTest.plotTestPredictions(fileName)
 
 probabilities = trainTest.predictProbabilities("2.jpg")
+print(probabilities)
