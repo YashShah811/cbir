@@ -1,2 +1,5 @@
 kFoldModel1.pkl
 Dataset/data.npy
+/Dataset
+/Results
+__pycache__

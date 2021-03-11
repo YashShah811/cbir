@@ -14,14 +14,13 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from skorch import NeuralNetClassifier
 
 datasetPath = "./Dataset"
-testImagesPath = "./Dataset/test/"
+testImagesPath = datasetPath + "/test/"
 maskDatasetPath = datasetPath + "/masked dataset"
 humanDatasetPath = datasetPath + "/human dataset"
 nonHumanDatasetPath = datasetPath + "/non-human dataset"
 preprocessedDataPath = datasetPath + "/data.npy"
 resultsPath = "./Results/"
-modelName = "kFoldModel.pkl"
-
+modelName = "kFoldModel1.pkl"
 
 class Data:
     def __init__(self):
@@ -142,7 +141,7 @@ class TrainTest:
         joblib.dump(self.model, modelName, compress=1)
 
     def loadModel(self):
-        self.model = joblib.load(modelName)
+    	self.model = joblib.load(modelName)
 
     def evaluate(self, testData=True):
         if testData:
@@ -197,42 +196,60 @@ class TrainTest:
         plt.show(block=True)
 
     def plotTestPredictions(self, imageName):
-        img = cv2.imread(testImagesPath + imageName, cv2.IMREAD_COLOR)
-        img = cv2.resize(img, (100, 100))
-        floatImg = img.astype(np.float32)
-        y_pred = self.model.predict(floatImg.reshape(-1, 3, 100, 100))
-        image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        fig = plt.figure()
-        plt.title("Predicted Label:{}".format(y_pred))
-        plt.imshow(image)
-        plt.savefig(resultsPath + imageName)
-        plt.close(fig)
+    	img = cv2.imread(testImagesPath + imageName, cv2.IMREAD_COLOR)
+    	img = cv2.resize(img, (100, 100))
+    	floatImg = img.astype(np.float32)
+    	y_pred = self.model.predict(floatImg.reshape(-1, 3, 100, 100))
+    	image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    	fig = plt.figure()
+    	plt.title("Predicted Label:{}".format(y_pred))
+    	plt.imshow(image)
+    	plt.savefig(resultsPath + imageName)
+    	plt.close(fig)
     
     def predictProbabilities(self, imageName):
-        img = cv2.imread(testImagesPath + imageName, cv2.IMREAD_COLOR)
-        img = cv2.resize(img, (100, 100))
-        floatImg = img.astype(np.float32)
-        y_pred = self.model.predict_proba(floatImg.reshape(-1, 3, 100, 100))
-        return y_pred[0]
+    	img = cv2.imread(testImagesPath + imageName, cv2.IMREAD_COLOR)
+    	img = cv2.resize(img, (100, 100))
+    	floatImg = img.astype(np.float32)
+    	self.loadModel()
+    	y_pred = self.model.predict_proba(floatImg.reshape(-1, 3, 100, 100))
+    	fig = plt.figure()
+    	plt.barh(["Masked Human", "Human", "Non-Human"],y_pred[0]*100, align='center')
+    	plt.title("Prediction")
+    	plt.imshow(img)
+    	plt.savefig(resultsPath + imageName)
+        # plt.close(fig)
+        # return y_pred[0]
 
+# buildData = False #sys.argv[1] == "True"
+# trainModel = False #sys.argv[2] == "True"
 
+# dataObject = Data()
+# dataObject.buildDataLoader(buildData)
 
-buildData = sys.argv[1] == "True"
-trainModel = sys.argv[2] == "True"
+# trainTest = TrainTest(dataObject)
+# if trainModel:
+#     trainTest.trainAndSaveModel()
 
-dataObject = Data()
-dataObject.buildDataLoader(buildData)
-
-trainTest = TrainTest(dataObject)
-if trainModel:
-    trainTest.trainAndSaveModel()
-
-trainTest.loadModel()
+# trainTest.loadModel()
 
 #trainTest.printClassificationReportAndPlotConfusionMatrix()
 
 #for fileName in os.listdir(testImagesPath):
 #    trainTest.plotTestPredictions(fileName)
+# for fileName in os.listdir(testImagesPath):
+# 	probabilities = trainTest.predictProbabilities(fileName)
+# 	print(probabilities)
 
-probabilities = trainTest.predictProbabilities("2.jpg")
-print(probabilities)
+
+def upload(filename):
+	buildData = False
+	trainModel = False
+	dataObject = Data()
+	dataObject.buildDataLoader(buildData)
+	trainTest = TrainTest(dataObject)
+	if trainModel:
+		trainTest.trainAndSaveModel()
+
+	trainTest.loadModel()
+	trainTest.predictProbabilities(filename)
