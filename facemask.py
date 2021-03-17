@@ -19,7 +19,7 @@ maskDatasetPath = datasetPath + "/masked dataset"
 humanDatasetPath = datasetPath + "/human dataset"
 nonHumanDatasetPath = datasetPath + "/non-human dataset"
 preprocessedDataPath = datasetPath + "/data.npy"
-resultsPath = "./Results/"
+resultsPath = "./static/"
 modelName = "kFoldModel1.pkl"
 
 class Data:
@@ -216,7 +216,7 @@ class TrainTest:
     	fig = plt.figure()
     	plt.barh(["Masked Human", "Human", "Non-Human"],y_pred[0]*100, align='center')
     	plt.title("Prediction")
-    	plt.imshow(img)
+    	# plt.imshow(fig)
     	plt.savefig(resultsPath + imageName)
         # plt.close(fig)
         # return y_pred[0]
